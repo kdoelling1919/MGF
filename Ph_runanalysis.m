@@ -12,6 +12,6 @@ ica = Ph_megica(data,layout,ncomps,pcafile,[]);
 
 mkdir([subdir 'Processed']);
 savefile = [subdir 'Processed/variables.mat'];
-save(savefile,'data','trialinfo','layout','neighbours','ica','-v7.3');
+save(savefile,'data','trlinfo','layout','neighbours','ica','-v7.3');
 
 
