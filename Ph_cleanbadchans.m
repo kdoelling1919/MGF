@@ -4,10 +4,11 @@ function [ cleandata ] = Ph_cleanbadchans( data,layout,neighbours,seglength )
 %   here: https://github.com/kdoelling1919/fieldtrip/blob/rejectviz/ft_rejectvisual.m
 %   
 %       data = fieldtrip data struct
+%       grad = grad for channel positions
 %       layout = layout struct as outputted by ft_prepare_layout
 %       neighbours = neighbours struct as outputted by ft_prepare_neighbours
 %       seglength = the length of each segment to consider as a "trial" for
-%       reject visual
+%           reject visual
     
     % chop raw signal into reasonably sized parts    
     cfg = [];

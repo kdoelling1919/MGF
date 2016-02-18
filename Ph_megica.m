@@ -53,7 +53,10 @@ function [ft_ICA,ft_PCAreject1,weights,sphere] = Ph_megica(data,layout,ncomps,pc
         cfg.component = [];
     end
     PCA_postreject = ft_rejectcomponent(cfg,ft_PCA);
-    close(fg);
+    if any(findall(0,'Type','Figure')==fg)
+        close(fg);
+        drawnow;
+    end
     clear ft_PCA
     PCA_postreject.trial{1} = PCA_postreject.trial{1} - repmat(mean(PCA_postreject.trial{1},2),1,size(PCA_postreject.trial{1},2));
     [EigenVectors]=pcsquash(PCA_postreject.trial{1});            % pca eigenvectors from eeglab

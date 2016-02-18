@@ -28,10 +28,10 @@ function [ cleandata ] = Ph_cleanica( ft_ICA,ft_PCA,weights,sphere,layout )
     else
         disp('No ICA components being removed')
     end
-    ICA_postreject = inv(weights*sphere)*activations;
+    ICA_postreject = (weights*sphere)\activations;
     
     ft_PCA_ICA =ft_PCA;
-    ft_PCA_ICA.trial{1}(1:ncomps,:) = ICA_postreject;
+    ft_PCA_ICA.trial{1}(1:size(activations,1),:) = ICA_postreject;
     cleandata = ft_rejectcomponent(struct('component',[],'demean','no'),ft_PCA_ICA);
 end
 
