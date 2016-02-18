@@ -16,7 +16,8 @@ save(savefile,'data','trlinfo','layout','neighbours','ica','pca','weights','sphe
 
 %% remove ica components and clear
 cleandata = Ph_cleanica(ica,pca,weights,sphere,layout);
-
+seglength = numSubPlot(length(cleandata.trial{1})./cleandata.fsample);
+cleanchdata = Ph_cleanbadchans(cleandata,layout,neighbours,seglength);
 
 
 
