@@ -3,10 +3,11 @@ subdir = '/Volumes/Vault/Data/Phonetica/R0013/';
 sqdfile = [subdir 'R0013_Phonetica1-LSdenoised_NR.sqd'];
 trialdef = struct('trig',164:167,'prestim',0,'poststim',5,'offset',-1);
 trialfun = 'alltrialfun';
+samplefs = 500;
 
-[data,trlinfo,layout,neighbours] = Ph_meganalysis(sqdfile,trialdef,trialfun);
+[data,trlinfo,layout,neighbours] = Ph_meganalysis(sqdfile,trialdef,trialfun,samplefs);
 
-seglength = numSubPlot(length(data.trial{1})./cleandata.fsample);
+seglength = numSubPlot(length(data.trial{1})./data.fsample);
 data = Ph_cleanbadchans(data,layout,neighbours,seglength);
 
 pcaname=regexp(sqdfile,'R\d{3,4}_(?<name>[a-zA-Z0-9]+)','names');

@@ -1,4 +1,4 @@
-function [data,trlinfo,layout,neighbours]=Ph_meganalysis(sqdfile,trialdef,trialfun)
+function [data,trlinfo,layout,neighbours]=Ph_meganalysis(sqdfile,trialdef,trialfun,samplefs)
 
         cfg = [];
         cfg.dataset = sqdfile;
@@ -23,11 +23,11 @@ function [data,trlinfo,layout,neighbours]=Ph_meganalysis(sqdfile,trialdef,trialf
         cfg.layout = layout;
         neighbours = ft_prepare_neighbours(cfg,data);
         
-%         cfg=[];
-%         cfg.resamplefs = 500;
-%         cfg.detrend = 'no';
-%         data = ft_resampledata(cfg,data);
-%         trlinfo.trl(:,1:3) = round(trlinfo.trl(:,1:3).*cfg.resamplefs/1000);
+        cfg=[];
+        cfg.resamplefs = samplefs;
+        cfg.detrend = 'no';
+        data = ft_resampledata(cfg,data);
+        trlinfo.trl(:,1:3) = round(trlinfo.trl(:,1:3).*cfg.resamplefs/1000);
 %       
         knownbads = [41 116 113 153];
         bads = mark_bad_channels(sqdfile,knownbads);
