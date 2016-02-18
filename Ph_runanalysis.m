@@ -8,14 +8,16 @@ trialfun = 'alltrialfun';
 pcaname=regexp(sqdfile,'R\d{3,4}_(?<name>[a-zA-Z0-9]+)','names');
 
 pcafile = [subdir pcaname.name '_PCA.jpg'];
-ica = Ph_megica(data,layout,ncomps,pcafile,[]);
+[ica,pca,weights,sphere] = Ph_megica(data,layout,ncomps,pcafile,[]);
 
 mkdir([subdir 'Processed']);
 savefile = [subdir 'Processed/variables.mat'];
-save(savefile,'data','trlinfo','layout','neighbours','ica','-v7.3');
+save(savefile,'data','trlinfo','layout','neighbours','ica','pca','weights','sphere','-v7.3');
 
-%% remove ica components
-cleandata = Ph_cleanica(ica);
+%% remove ica components and clear
+cleandata = Ph_cleanica(ica,pca,weights,sphere,layout);
+
+
 
 
 

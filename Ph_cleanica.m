@@ -1,6 +1,12 @@
-function [ output_args ] = Ph_cleanica( ft_ICA,weights,sphere,layout )
-%Ph_cleanica remove components e
-%   Detailed explanation goes here
+function [ cleandata ] = Ph_cleanica( ft_ICA,ft_PCA,weights,sphere,layout )
+%Ph_cleanica remove components based on visual inspections
+%   ft_ICA = ica struct as outputted by Ph_megica.m or ft_componentanalysis
+%   ft_PCA = pca struct for weights and formatting
+%   weights = weights variable outputted by Ph_megica.m
+%   sphere = sphere variable outputted by Ph_megica.m
+%   layout = layout struct as outputted by ft_prepare_layout.m
+%
+%   Adapted from code written by Adden Flinker: Keith Doelling, 2/18/2016
 
     cfg = [];
     cfg.layout = layout; % specify the layout file that should be used for plotting
@@ -23,5 +29,9 @@ function [ output_args ] = Ph_cleanica( ft_ICA,weights,sphere,layout )
         disp('No ICA components being removed')
     end
     ICA_postreject = inv(weights*sphere)*activations;
+    
+    ft_PCA_ICA =ft_PCA;
+    ft_PCA_ICA.trial{1}(1:ncomps,:) = ICA_postreject;
+    cleandata = ft_rejectcomponent(struct('component',[],'demean','no'),ft_PCA_ICA);
 end
 
