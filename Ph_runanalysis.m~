@@ -1,9 +1,0 @@
-sqdfile = 'Volumes/Vault/Data/Phonetica/R0013/R0013_Phonetica1-LSdenoised_NR.sqd';
-trialdef = struct('trig',164:167,'prestim',0,'poststim',5,'offset',-1);
-trialfun = 'alltrialfun';
-
-[data,layout,neighbours] = Ph_meganalysis(sqdfile,trialdef,trialfun);
-ica = Ph_megica(data,layout);
-
-mkdir('Processed');
-save
