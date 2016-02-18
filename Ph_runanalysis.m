@@ -14,4 +14,8 @@ mkdir([subdir 'Processed']);
 savefile = [subdir 'Processed/variables.mat'];
 save(savefile,'data','trlinfo','layout','neighbours','ica','-v7.3');
 
+%% remove ica components
+cleandata = Ph_cleanica(ica);
+
+
 

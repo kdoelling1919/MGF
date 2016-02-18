@@ -1,4 +1,4 @@
-function ft_ICA = Ph_megica(data,layout,ncomps,pcafile,remove1)
+function [ft_ICA,weights,sphere] = Ph_megica(data,layout,ncomps,pcafile,remove1)
 %{      
     Runs ICA on a PCA projection of MEG data in fieldtrip format.
         data    = (struct) data struct output from ft_preprocessing
@@ -28,11 +28,11 @@ function ft_ICA = Ph_megica(data,layout,ncomps,pcafile,remove1)
     cfg.ylim = [-4 4].*std(ft_PCA.trial{1}(:));
 
     ft_databrowser(cfg, ft_PCA);
+    fg = gcf;
     drawnow
     if ~isempty(pcafile)
-        saveas(gcf,pcafile,'jpg')
+        saveas(fg,pcafile,'jpg')
     end
-    close(gcf)
     
     % prepare to reject components
     cfg = [];
@@ -53,6 +53,7 @@ function ft_ICA = Ph_megica(data,layout,ncomps,pcafile,remove1)
         cfg.component = [];
     end
     PCA_postreject = ft_rejectcomponent(cfg,ft_PCA);
+    close(fg);
     clear ft_PCA
     PCA_postreject.trial{1} = PCA_postreject.trial{1} - repmat(mean(PCA_postreject.trial{1},2),1,size(PCA_postreject.trial{1},2));
     [EigenVectors]=pcsquash(PCA_postreject.trial{1});            % pca eigenvectors from eeglab
