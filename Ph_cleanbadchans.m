@@ -16,10 +16,11 @@ function [ cleandata ] = Ph_cleanbadchans( data,layout,neighbours,seglength )
     split = ft_redefinetrial(cfg,data);
     % run reject visual to identify bad channels
     cfg = [];
+    cfg.checksize = inf;
     cfg.grad = data.grad;
     cfg.layout = layout;
     cfg.neighbours = neighbours;
-    cfg.keepchannel = 'neighbours';
+    cfg.keepchannel = 'repair';
     cfg.keeptrial = 'nan';
     cfg.method = 'summary';
     cfg.metric = '1/var';
