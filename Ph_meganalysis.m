@@ -15,7 +15,7 @@ function [data,trlinfo,layout,neighbours]=Ph_meganalysis(sqdfile,trialdef,trialf
         cfgP.demean = 'no';
         
         data = ft_preprocessing(cfgP);
-        
+        trlinfo.fsample = data.fsample;
         layout = ft_prepare_layout(data.cfg,data); 
         cfg=[];
         cfg.method='distance';
@@ -27,7 +27,11 @@ function [data,trlinfo,layout,neighbours]=Ph_meganalysis(sqdfile,trialdef,trialf
         cfg.resamplefs = samplefs;
         cfg.detrend = 'no';
         data = ft_resampledata(cfg,data);
+        
         trlinfo.trl(:,1:3) = round(trlinfo.trl(:,1:3).*cfg.resamplefs/1000);
+        samples = cellfun(@(x) round(x.*cfg.resamplefs/1000),{trlinfo.event.sample},'UniformOutput',false);
+        [trlinfo.event.sample] = deal(samples{:});
+        trlinfo.fsample = cfg.resamplefs;
 %       
         knownbads = [41 116 113 153];
         bads = mark_bad_channels(sqdfile,knownbads);
