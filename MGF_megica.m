@@ -1,4 +1,4 @@
-function [ft_ICA,ft_PCAreject1,weights,sphere] = Ph_megica(data,layout,ncomps,pcafile,remove1)
+function [ft_ICA,ft_PCAreject1,weights,sphere] = MGF_megica(data,layout,ncomps,pcafile,remove1)
 %{      
     Runs ICA on a PCA projection of MEG data in fieldtrip format.
         data    = (struct) data struct output from ft_preprocessing

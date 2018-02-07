@@ -1,4 +1,4 @@
-function [data,trlinfo,layout,neighbours]=Ph_meganalysis(sqdfile,trialdef,trialfun,samplefs)
+function [data,trlinfo,layout,neighbours] = MGF_meganalysis(sqdfile,trialdef,trialfun,samplefs)
 
         cfg = [];
         cfg.dataset = sqdfile;

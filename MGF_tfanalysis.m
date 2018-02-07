@@ -1,4 +1,4 @@
-function [ TFR ] = Ph_tfanalysis(data,freqoi,toi)
+function [ TFR ] = MGF_tfanalysis(data,freqoi,toi)
 %Ph_tfanalysis time frequency analysis for wavelet MEG data, depends on fieldtrip
 %   Detailed explanation goes here
     cfg = [];

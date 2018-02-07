@@ -1,4 +1,4 @@
-function [ data ] = Ph_epochtrial( data,trlinfo,field )
+function [ data ] = MGF_epochtrial( data,trlinfo,field )
 %Ph_epochtrial epoch the raw data files into the trial.
 %   Detailed explanation goes here
 

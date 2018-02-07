@@ -1,4 +1,4 @@
-function [ cleandata ] = Ph_cleanica( ft_ICA,ft_PCA,weights,sphere,layout )
+function [ cleandata ] = MGF_cleanica( ft_ICA,ft_PCA,weights,sphere,layout )
 %Ph_cleanica remove components based on visual inspections
 %   ft_ICA = ica struct as outputted by Ph_megica.m or ft_componentanalysis
 %   ft_PCA = pca struct for weights and formatting

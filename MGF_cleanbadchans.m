@@ -1,4 +1,4 @@
-function [ cleandata ] = Ph_cleanbadchans( data,layout,neighbours,seglength )
+function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,seglength )
 %Ph_cleanbadchans Repair bad channels
 %   This uses a modified version of ft_rejectvisual which can be found
 %   here: https://github.com/kdoelling1919/fieldtrip/blob/rejectviz/ft_rejectvisual.m
