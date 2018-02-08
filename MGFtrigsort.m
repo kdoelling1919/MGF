@@ -1,6 +1,8 @@
 function [ trl, event ] = MGFtrigsort( cfg )
-% MGFtrigsort Summary of this function goes here
-%   Detailed explanation goes here
+% MGFtrigsort takes in cfg with prestim, poststim and trig fields
+%   Takes in sqdfile and generates events based on trigger info.
+%   THIS FUNCTION IS NOT MEANT FOR EXTERNAL USE.
+
 % get header
 hdr = ft_read_header(cfg.dataset);
 % extract trigger groups
