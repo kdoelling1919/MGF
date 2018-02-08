@@ -2,6 +2,9 @@ function [ trl, event ] = MGFtrigsort( cfg )
 % MGFtrigsort takes in cfg with prestim, poststim and trig fields
 %   Takes in sqdfile and generates events based on trigger info.
 %   THIS FUNCTION IS NOT MEANT FOR EXTERNAL USE.
+%
+% Created by Keith Doelling, New York University, 2/7/18
+
 
 % get header
 hdr = ft_read_header(cfg.dataset);

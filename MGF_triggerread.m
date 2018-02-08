@@ -31,20 +31,19 @@ function [ trlinfo ] = MGF_triggerread( sqdfile, trigstruct, prestim, poststim )
 %   event = is the struct read out from ft_read_event containing trigger
 %       sample and the triggers that were found on this event.
 %
-%   Created Keith Doelling, New York University, 2/7/18
+%   Created by Keith Doelling, New York University, 2/7/18
 
+    % create fieldtrip cfg
     cfg = [];
     cfg.dataset = sqdfile;
     cfg.continuous = 'yes';
-    % get trialinfo 
+    % define trials using these parameters
     cfg.trialdef.prestim = prestim;
     cfg.trialdef.poststim = poststim;
     cfg.trialdef.trig = trigstruct;
 
-    % MGFtrigsort is a function I wrote to collect my trials based on
-    % triggers and collect other information about them as needed.
-    % You'll need to write your own function which is tailored to your
-    % experiment
+    % MGFtrigsort is a general function which picks events and triggers
+    % based on trigstruct. See examples above.
     cfg.trialfun = 'MGFtrigsort';
     [trlinfo.trl, trlinfo.event] = MGFtrigsort(cfg);
 
