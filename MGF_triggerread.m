@@ -1,43 +1,28 @@
-cd /Volumes/Vault/Data/Phonetica
+function [ trlinfo ] = MGF_triggerread( sqdfile, trigstruct )
+%UNTITLED2 Summary of this function goes here
+%   Detailed explanation goes here
+    cfg = [];
+    cfg.dataset = sqdfile;
+    cfg.continuous = 'yes';
 
-Origdir = '/Volumes/Vault/Data/Phonetica/';
-cd(Origdir);
-Subjects = dir('R*');
-for sub = 1:length(Subjects)
-cd(Subjects(sub).name)
+    % create new config for current preprocessing
+    cfgP = cfg;
 
-protocol = 'Phonetica';
-sqdfiles=dir(['*' protocol '*11.sqd']);
+    % get trialinfo 
+    cfg.trialdef.prestim = 5;
+    cfg.trialdef.poststim = 17;
+    cfg.trialdef.trig = trigstruct;
 
-thresh= 3e4;
-channels=160:167;
-eventnums=zeros(length(channels),length(sqdfiles));
-figure('Name',Subjects(sub).name);
-ordax=gca;
-color={'r','g','b','k','c','m','y',};
-order = cell(size(sqdfiles));
-load ../Phonetica_stimuli/Exp/list
-for s = 1:length(sqdfiles)
-    sqdfile = sqdfiles(s);
-    %read in triggers
-    [data,info] = sqdread(sqdfile.name,'Channels',channels);
-    
-    events=data >thresh;
-    
-    strts=diff(events);
-    strts=strts>0;
-    eventnums(:,s)=sum(strts);
-    
-    [samp,cond] = find(strts);
-    
-    [~,indx] = sort(samp,'ascend');
-    
-    order{s}=cond(indx);
-    plot(ordax,1:length(order{s}),order{s},['.-' color{s}],'MarkerSize',20)
-    hold on;
+    % MPtrialsort is a function I wrote to collect my trials based on
+    % triggers and collect other information about them as needed.
+    % You'll need to write your own function which is tailored to your
+    % experiment
+    cfg.trialfun = 'MGFtrigsort';
+    cfg = ft_definetrial(cfg);
+
+    % collect trialinfo
+    trlinfo.trl = cfg.trl;
+    trlinfo.event = cfg.event;
+
 end
-% set(gca,'xlim',get(gca,'xlim'))
 
-plot(log2(triggers),'.-','MarkerSize',20)
-cd ../
-end
