@@ -44,8 +44,8 @@ function [ trlinfo ] = MGF_triggerread( sqdfile, trigstruct, prestim, poststim )
 
     % MGFtrigsort is a general function which picks events and triggers
     % based on trigstruct. See examples above.
-    cfg.trialfun = 'MGFtrigsort';
     [trlinfo.trl, trlinfo.event] = MGFtrigsort(cfg);
-
+    info = sqdread(sqdfile,'info');
+    trlinfo.fsample = get(info, 'SamplingRate');
 end
 
