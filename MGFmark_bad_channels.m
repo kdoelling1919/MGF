@@ -5,7 +5,11 @@ function [ bads ] = MGFmark_bad_channels( varargin )
 %   reason
 %
 %   Created by Keith Doelling, 2/12/2016
-    if nargin == 2
+    if nargin == 3
+        sqdfile = varargin{1};
+        knownbads = varargin{2};
+        satthresh = varargin{3};
+    elseif nargin == 2
         sqdfile = varargin{1};
         knownbads = varargin{2};
     elseif nargin == 1
@@ -21,12 +25,12 @@ function [ bads ] = MGFmark_bad_channels( varargin )
 
     for t = 1:19800:sampnum
         finish = min(20000+t,sampnum);
-        data = sqdread(sqdfile, 'Channels',[0 156],'Samples',[t finish]);
+        data = sqdread(sqdfile, 'Channels',[0:156],'Samples',[t finish]);
 
         change = diff(data);
         sat = change == 0;
         sat = mean(sat);
-        badchannels = [badchannels find(sat > .5)];
+        badchannels = [badchannels find(sat > satthresh)];
     end
     [badchannels] = unique(badchannels);
     bads = unique([badchannels knownbads]);
