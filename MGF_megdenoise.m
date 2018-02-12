@@ -3,14 +3,12 @@ function bads = MGF_megdenoise(sqdfile, emptyfile, knownbads)
     
     % if no empty room file use the data
     if isempty(emptyfile)
-       empfile = sqdfile;
-    else
-       empfile = [subdir '/' emptyfile.name];
+       emptyfile = sqdfile;
     end
     % find the bad channels
     bads = MGFmark_bad_channels(sqdfile,knownbads);
     % run Adeen's denoising script
-    LSdenoise(empfile,sqdfile,[],[],bads,[],1);
-    delete('*LSdenoised.sqd')
+    LSdenoise(emptyfile,sqdfile,[],[],bads,[],1);
+    delete(strrep(sqdfile,'.sqd','-LSdenoised.sqd'))
 end
 
