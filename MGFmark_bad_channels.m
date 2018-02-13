@@ -12,9 +12,11 @@ function [ bads ] = MGFmark_bad_channels( varargin )
     elseif nargin == 2
         sqdfile = varargin{1};
         knownbads = varargin{2};
+        satthresh = .5;
     elseif nargin == 1
         sqdfile = varargin{1};
         knownbads = [];
+        satthresh = .5;
     else
         error('Need inputs!')
     end
