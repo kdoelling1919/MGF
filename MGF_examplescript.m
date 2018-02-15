@@ -1,15 +1,25 @@
 %% set parameters and locations
 % these reguire human input
-subno = 'R1095';
+% subject info
+subno = 'R0053';
 root = '/Volumes/Vault/Data/NewMusicPhase/';
 knownbads = [21 53 88 153];
 protocol = 'twotones';
+% trigger info
+% trigger = {161:166, 168, 167}; % for newmusicphase
+trigger = {161:162}; % for twotones
+% trial info
+prestim = 1;
+poststim = 1;
+samplefs = 100;
 
 %These are set by subject folder tree structure!
 megdir = [root 'meg/'];
 logdir = [root 'logs/'];
+figdir = [root 'figs/'];
 submeg = [megdir subno '/'];
 sublog = [logdir subno '/'];
+subfig = [figdir subno '/'];
 sqdfiles = dir([submeg '*' protocol '*.sqd']);
 %%
 % remove sqdfiles that have already been denoised (in case you are running
@@ -42,7 +52,7 @@ else
     % add the path to the file.
     emptyfile = [submeg emptyfile.name];
 end
-%%
+%% DENOISE THE DATA
 % collect denoised and channel repair data
 data2 = cell(1,length(sqdfiles));
 % denoise on the individual blocks repair bad channels and concatenate
@@ -50,37 +60,96 @@ for f = 1:length(sqdfiles)
     % denoise the blocked data
     sqdfiles(f).name = [submeg sqdfiles(f).name];
     bads = MGF_megdenoise(sqdfiles(f).name, emptyfile, knownbads);
-    sqdfiles_clean = strrep(sqdfiles(f).name,'.sqd','-LSdenoised_NR.sqd');
-    
-    % repair those bad channels that were lost
+    sqdfiles_clean = strrep(sqdfiles(f).name,'.sqd','-LSdenoised_NR.sqd');    
     % extract data from files
-    cfg = [];
-    cfg.dataset = sqdfiles(f).name;
-    cfg.channel = 1:192;
-    data = ft_preprocessing(cfg);
-    % get layout of channels and figure out which channels are neighboring
-    layout = ft_prepare_layout(data.cfg,data); 
-    cfg=[];
-    cfg.method='distance';
-    cfg.neighbourdist=4;
-    cfg.layout = layout;
-    cfg.channel = 1:192;
-    neighbours = ft_prepare_neighbours(cfg,data);
-    trigchans = data.trial{1}(158:end,:);
+    [data, layout, neighbours] = MGF_meganalysis(sqdfiles_clean, 1:192, 1000);
     % repair dead channels using spline based on channel locations
-    cfg = [];
-    cfg.neighbours = neighbours;
-    cfg.method = 'spline';
-    cfg.badchannel = data.label(bads);
-    cfg.channel = 1:192;
-    data = ft_channelrepair(cfg,data);
-    delete(sqdfiles_clean);
-    % save repaired data
-    data2{f} = [data.trial{1}; trigchans];
+    data = MGF_cleanbadchans(data, layout, neighbours, [], bads);
+    data2{f} = data.trial{1};
+%     delete(sqdfiles_clean);
 end
 % % concatenate blocks
 wholesesh = regexprep(sqdfiles_clean,'block\d\_','');
 if exist(wholesesh,'file')
     delete(wholesesh)
 end
-sqdwrite(sqdfiles(f).name, wholesesh, cell2mat(data2)'); 
+datachans = regexp(data.label,'^[A-Z]+\d+$');
+datachans = ~cellfun('isempty',datachans);
+fulldata = cell2mat(data2)'; 
+% conversion issues!)
+fulldata(:,datachans) = fulldata(:,datachans).*1e15;
+fulldata(:,~datachans) = fulldata(:,~datachans).*7.9067*1e3;
+% write the the newly denoised data to a file.
+sqdwrite(sqdfiles(f).name, wholesesh, fulldata); 
+
+%% PREPROCESS THE DATA
+% preprocess info
+lpf = 30;
+hpf = .1;
+icacomps = 32;
+
+% make figure file
+if ~exist(subfig,'dir')
+    mkdir(subfig);
+end
+pcafig = [subfig subno '_pca'];
+prepfig = [subfig subno '_cleancomp'];
+
+% get trlinfo from file
+trlinfo = MGF_triggerread(wholesesh, trigger, prestim, poststim);
+% pull out data from file
+[data, layout, neighbours, trlinfo] = MGF_meganalysis(wholesesh, 1:157, samplefs, lpf, hpf, trlinfo);
+% run ica analysis
+[ica,pca,weights,sphere] = MGF_megica(data, layout, 32, pcafig, 0);
+% remove ica components you don't like
+cleandata = MGF_cleanica(ica,pca,weights,sphere,layout);
+[~,lngth] = numSubPlot(round(cleandata.time{1}(end)));
+% remove any other clearly unruly channels
+cleandata = MGF_cleanbadchans(cleandata, layout, neighbours, lngth, 'visual'); % sometimes generates issues with data.grad not having the right size
+overcleandata = MGF_overclean(cleandata, neighbours, 3e-12, 10, .05, 50);
+
+figure;
+subplot(2,1,1);
+plot(data.time{1}, data.trial{1});
+subplot(2,1,2);
+plot(data.time{1}, overcleandata.trial{1});
+setLims(gcf,'ylim')
+saveas(gcf,prepfig,'jpg');
+%% Plot the ERP
+figure;
+cfg = [];
+cfg.trl = trlinfo.trl;
+epochclean = ft_redefinetrial(cfg, overcleandata);
+epoch = ft_redefinetrial(cfg,data);
+cfg = [];
+avgclean = ft_timelockanalysis(cfg, epochclean);
+avg = ft_timelockanalysis(cfg, epoch);
+cfg = [];
+cfg.baseline = [-1 0];
+avgclean = ft_timelockbaseline(cfg,avgclean);
+avg = ft_timelockbaseline(cfg,avg);
+subplot(2,1,1);
+plot(avg.time,avg.avg);
+title('Original data');
+subplot(2,1,2);
+plot(avgclean.time,avgclean.avg);
+title('Cleaned data');
+
+figure;
+plot(avg.time, rms(avg.avg)); hold on;
+plot(avgclean.time, rms(avgclean.avg));
+legend({'Original','Clean'})
+%% TF ANALYSIS and EPOCH OF THE DATA
+% select frequencies of interest
+% freqoi = [.3:.2:.7 1:.25:2 2.5:.5:10];
+freqoi = 1:20;
+toi = data.time{1};
+% do a time frequency analysis
+TF = MGF_tfanalysis(overcleandata,freqoi,toi,4);
+TF.powspctrm = abs(TF.fourierspctrm).^2;
+TF.dimord = 'rpt_chan_freq_time';
+TF = rmfield(TF,'fourierspctrm');
+epochTF = MGF_epochtrial(TF,trlinfo,'powspctrm');
+epochTFbsl = ft_freqbaseline(struct('baseline',[-1 0],'baselinetype','relative'),epochTF);
+avg = ft_freqdescriptives([],epochTFbsl);
+figure; uimagesc(avg.time(50:150),avg.freq, squeeze(mean(avg.powspctrm(:,:,50:150)))); axis xy;
