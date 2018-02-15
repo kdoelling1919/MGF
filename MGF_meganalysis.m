@@ -1,44 +1,53 @@
-function [data,trlinfo,layout,neighbours] = MGF_meganalysis(sqdfile,trialdef,trialfun,samplefs)
-
+function [data, layout, neighbours, trlinfo] = MGF_meganalysis(sqdfile, channels, samplefs, lpf, hpf, trlinfo)
+        if nargin < 4
+            lpf = [];
+        end
+        if nargin < 5
+            hpf = [];
+        end
+        if nargin < 6
+            trlinfo = [];
+        end
         cfg = [];
         cfg.dataset = sqdfile;
-        cfg.continuous = 'yes';
-        cfgP = cfg;
-        cfg.trialdef = trialdef;
-        cfg.trialfun = trialfun;
-        cfg = ft_definetrial(cfg);
-        trlinfo.trl = cfg.trl;
-        trlinfo.event = cfg.event;
-    
-        cfgP.channel = [1:157];
-        cfgP.detrend = 'yes';
-        cfgP.demean = 'no';
-        
-        data = ft_preprocessing(cfgP);
-        trlinfo.fsample = data.fsample;
-        layout = ft_prepare_layout(data.cfg,data); 
-        cfg=[];
-        cfg.method='distance';
-        cfg.neighbourdist=4;
-        cfg.layout = layout;
-        neighbours = ft_prepare_neighbours(cfg,data);
-        
-        cfg=[];
-        cfg.resamplefs = samplefs;
+        cfg.continuous = 'yes';    
+        cfg.channel = channels;
         cfg.detrend = 'no';
-        data = ft_resampledata(cfg,data);
+        cfg.demean = 'no';
+        if ~isempty(lpf)
+            cfg.lpfilter = 'yes';
+            cfg.lpfreq = lpf;
+        end
+        if ~isempty(hpf)
+            cfg.hpfilter = 'yes';
+            cfg.hpfreq = hpf;
+            cfg.hpfiltord = 4;
+        end
+        data = ft_preprocessing(cfg);
+        oldfs = data.fsample;
+        if nargout > 1
+            layout = ft_prepare_layout(data.cfg,data);
+        end
+        if nargout > 2
+            cfg=[];
+            cfg.method='distance';
+            cfg.neighbourdist=4;
+            cfg.layout = layout;
+            neighbours = ft_prepare_neighbours(cfg,data);
+        end
         
-        trlinfo.trl(:,1:3) = round(trlinfo.trl(:,1:3).*cfg.resamplefs/1000);
-        samples = cellfun(@(x) round(x.*cfg.resamplefs/1000),{trlinfo.event.sample},'UniformOutput',false);
-        [trlinfo.event.sample] = deal(samples{:});
-        trlinfo.fsample = cfg.resamplefs;
-%       
-        knownbads = [41 116 113 153];
-        bads = mark_bad_channels(sqdfile,knownbads);
+        if samplefs~=data.fsample
+            cfg=[];
+            cfg.resamplefs = samplefs;
+            cfg.detrend = 'no';
+            data = ft_resampledata(cfg,data);
+        end
         
-        cfgcr= [];
-        cfgcr.neighbours = neighbours;
-        cfgcr.badchannel = data.label(bads);
-        cfgcr.trials = 'all';
-        data = ft_channelrepair(cfgcr,data);      
+        if ~isempty(trlinfo) && nargout == 4
+            trlinfo.trl(:,1:3) = round(trlinfo.trl(:,1:3).*samplefs/oldfs);
+            samples = cellfun(@(x) round(x.*samplefs/oldfs),...
+                {trlinfo.event.sample},'UniformOutput',false);
+            [trlinfo.event.sample] = deal(samples{:});
+            trlinfo.fsample = samplefs;
+        end
 end
