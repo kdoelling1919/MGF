@@ -46,6 +46,6 @@ function [ trlinfo ] = MGF_triggerread( sqdfile, trigstruct, prestim, poststim )
     % based on trigstruct. See examples above.
     [trlinfo.trl, trlinfo.event] = MGFtrigsort(cfg);
     info = sqdread(sqdfile,'info');
-    trlinfo.fsample = get(info, 'SamplingRate');
+    trlinfo.fsample = get(info.acqparam, 'SampleRate');
 end
 
