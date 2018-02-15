@@ -1,12 +1,15 @@
-function [ TFR ] = MGF_tfanalysis(data,freqoi,toi)
-%Ph_tfanalysis time frequency analysis for wavelet MEG data, depends on fieldtrip
+function [ TFR ] = MGF_tfanalysis(data,freqoi,toi, m )
+% MGF_tfanalysis time frequency analysis for wavelet MEG data, depends on fieldtrip
 %   Detailed explanation goes here
+    if nargin < 4
+        m = 7;
+    end
     cfg = [];
     cfg.channel = 'all';
     cfg.method = 'wavelet';
     cfg.foi = freqoi;
     cfg.toi = toi;
-    cfg.width = 7;
+    cfg.width = m;
     cfg.keeptrials = 'yes';
     cfg.output = 'fourier';
     cfg.polyremoval = -1;
