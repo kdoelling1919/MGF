@@ -10,8 +10,12 @@ function [data, layout, neighbours, trlinfo] = MGF_meganalysis(sqdfile, channels
         end
         cfg = [];
         cfg.dataset = sqdfile;
-        cfg.continuous = 'yes';    
-        cfg.channel = channels;
+        cfg.continuous = 'yes';
+        if isempty(channels)
+            cfg.channel = 'meg';
+        else
+            cfg.channel = channels;
+        end
         cfg.detrend = 'no';
         cfg.demean = 'no';
         if ~isempty(lpf)
@@ -24,7 +28,7 @@ function [data, layout, neighbours, trlinfo] = MGF_meganalysis(sqdfile, channels
             cfg.hpfiltord = 4;
         end
         data = ft_preprocessing(cfg);
-        oldfs = data.fsample;
+
         if nargout > 1
             layout = ft_prepare_layout(data.cfg,data);
         end
@@ -43,9 +47,9 @@ function [data, layout, neighbours, trlinfo] = MGF_meganalysis(sqdfile, channels
             data = ft_resampledata(cfg,data);
         end
         
-        if ~isempty(trlinfo) && nargout == 4
-            trlinfo.trl(:,1:3) = round(trlinfo.trl(:,1:3).*samplefs/oldfs);
-            samples = cellfun(@(x) round(x.*samplefs/oldfs),...
+        if ~isempty(trlinfo) && nargout == 4 && trlinfo.fsample ~= samplefs
+            trlinfo.trl(:,1:3) = round(trlinfo.trl(:,1:3).*samplefs/trlinfo.fsample);
+            samples = cellfun(@(x) round(x.*samplefs/trlinfo.fsample),...
                 {trlinfo.event.sample},'UniformOutput',false);
             [trlinfo.event.sample] = deal(samples{:});
             trlinfo.fsample = samplefs;
