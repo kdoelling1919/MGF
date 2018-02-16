@@ -134,6 +134,10 @@ title('Original data');
 subplot(2,1,2);
 plot(avgclean.time,avgclean.avg);
 title('Cleaned data');
+figname 
+ttfig = [subfig subno '_erp'];
+saveas(gcf,ttfig,'jpg');
+
 
 figure;
 plot(avg.time, rms(avg.avg)); hold on;
