@@ -16,6 +16,9 @@ trigger = cell(1,length(trig));
 for tr = 1:length(cfg.trialdef.trig)
     % look for each trigger grouping
     trigger{tr} = ft_read_event(cfg.dataset,'trigindx',trig{tr}, 'threshold',2.5);
+    if isempty(trigger{tr})
+        error('No triggers found with the current trig set up')
+    end
     if tr == 1
         % If this is the first group, put all triggers into events and
         % update some formatting
