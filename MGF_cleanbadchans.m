@@ -1,29 +1,37 @@
 function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,seglength, chans )
-%Ph_cleanbadchans Repair bad channels
-%   This uses a modified version of ft_rejectvisual which can be found
-%   here: https://github.com/kdoelling1919/fieldtrip/blob/rejectviz/ft_rejectvisual.m
-%   it has since been incorporated to fieldtrip
-%   
-%       data = fieldtrip data struct
-%       grad = grad for channel positions
+%MGF_cleanbadchans Repairs bad channels as specified or through visual
+%inspection
+%   Inputs
+%       data = fieldtrip data struct or filepath to sqd data to be read in
+%           with default preprocessing
 %       layout = layout struct as outputted by ft_prepare_layout
 %       neighbours = neighbours struct as outputted by ft_prepare_neighbours
-%       seglength = the length of each segment to consider as a "trial" for
-%           reject visual
+%       seglength = the length of each segment (in seconds) to consider as a "trial" for
+%           reject visual (default = 20)
+%       chans = a vector of numbers or 'visual'. If 'visual', function
+%       will call ft_rejectvisual with summary method to allow you to
+%       select channels to repair based on visual inspection. If a vector
+%       of numbers, function will repair channels specified by those
+%       numbers. (default is 'visual')
+%   Outputs
+%       cleandata = fieldtrip data struct with repaired channels
     
+% If data is a filepath read in the data
     if ischar(data)
         cfg = [];
         cfg.dataset = data;
+        cfg.channel = 'meg';
         data = ft_preprocessing(cfg);
     elseif ~isstruct(data)
         error('data variable is of wrong type');
     end
-    
+% If no channels specified lets go visual    
     if isempty(chans)
         chans = 'visual';
     end
     
     if strcmp(chans, 'visual')
+        % if visual, then set seglength default
         if isempty(seglength)
             seglength = 20;
         end
@@ -43,6 +51,7 @@ function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,seglength, ch
         cfg.metric = '1/var';
         cleandata = ft_rejectvisual(cfg,split);
     elseif isnumeric(chans)
+        % fix bad channels as specified
         cfg = [];
         cfg.checksize = Inf;
         cfg.neighbours = neighbours;
@@ -50,6 +59,7 @@ function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,seglength, ch
         cfg.badchannel = data.label(chans);
         cleandata = ft_channelrepair(cfg,data);
     else
+        % you did something wrong
         error('chans variable of wrong type')
     end
     

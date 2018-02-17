@@ -1,6 +1,20 @@
 function [ cleandata ] = MGF_overclean( data, neighbours, thresh, chan2repair, minsec, segwin )
 %MFG_overclean Really gets in there and scrubs
-%   Detailed explanation goes here
+%   Inputs:
+%       data = fieldtrip data struct
+%       neighbours = fieldtrip neighbours struct
+%       thresh = a scalar value, a threshold to find aberrant data.
+%       chan2repair = a scalar value, the number of aberrant channels to
+%           tolerate before removing pca components to get rid of the
+%           artifact. If the number of channels is less than chan2repair,
+%           we will use ft_channelrepair to fix it.
+%       minsec = add buffer (in seconds) around artifacts to make sure we get it all
+%       segwin = a window around each artifact to search for other
+%       artifacts. If a second artifact is within the window, treat them as
+%       one.
+%
+%   Outputs:
+%       cleandata = output data struct
     dat = data.trial{1};
         
         % thresh

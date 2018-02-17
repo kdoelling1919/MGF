@@ -1,6 +1,13 @@
-function [ data ] = MGF_epochtrial( data,trlinfo,field )
-%Ph_epochtrial epoch the raw data files into the trial.
-%   Detailed explanation goes here
+function [ data ] = MGF_epochfreq( data,trlinfo,field )
+%MGF_epochfreq epoch continuous TF data structs using trlinfo
+%   Inputs:
+%       data = continuous TF data struct as output from FT_FREQANALYSIS or
+%           MGF_TFANALYSIS
+%       trlinfo = the trial structure as output from MGF_TRIGGERREAD
+%       field = the name of the field in data to epoch.
+%
+%    Outputs:
+%       data = epoched TF data struct.
 
 if iscell(data.time)
     time = data.time{1};

@@ -1,7 +1,16 @@
 function [ bestchannels ] = MGF_twotoneschannel( filename, triggers, nchans, plotflag)
 %MGF_twotonechannels reads in denoised MEG data and outputs best channels
 %for two tone data by finding the peak M100 respond and 
-%   Detailed explanation goes here
+%   Inputs:
+%       filename = filepath to two tone sqd fata
+%       triggers = the trigger channels used in experiment (default is
+%           {161:162}). Must be in cell format
+%       nchans = the number of channels to return in each hemisphere.
+%       plotflag = logical number, if 1, plot topography and butterfly plot
+%
+%   Outputs:
+%       bestchannels = nchans x 2 array with first column giving best
+%       channels for left hemisphere and second column for right hemisphere
 
     if ~exist(filename, 'file')
         error('File does not exist')
@@ -11,6 +20,9 @@ function [ bestchannels ] = MGF_twotoneschannel( filename, triggers, nchans, plo
     end
     if nargin < 3
         nchans = 10;
+    end
+    if nargin < 4
+        plotflag = 0
     end
     if ~iscell(triggers)
         triggers = {triggers};

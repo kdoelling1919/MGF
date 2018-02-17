@@ -153,7 +153,7 @@ TF = MGF_tfanalysis(overcleandata,freqoi,toi,4);
 TF.powspctrm = abs(TF.fourierspctrm).^2;
 TF.dimord = 'rpt_chan_freq_time';
 TF = rmfield(TF,'fourierspctrm');
-epochTF = MGF_epochtrial(TF,trlinfo,'powspctrm');
+epochTF = MGF_epochfreq(TF,trlinfo,'powspctrm');
 epochTFbsl = ft_freqbaseline(struct('baseline',[-1 0],'baselinetype','relative'),epochTF);
 avg = ft_freqdescriptives([],epochTFbsl);
 figure; uimagesc(avg.time(50:150),avg.freq, squeeze(mean(avg.powspctrm(:,:,50:150)))); axis xy;

@@ -1,7 +1,22 @@
 function [ bestchannels ] = MGFchannelselect( data, layout, timewin, nchans, findtime, plotflag, plotwin)
 %MGFchannelselect Select best channels based on peak response in a
 %timewindow
-%   Detailed explanation goes here
+%   Inputs:
+%       data = fieldtrip data struct
+%       layout = fieldtrip layout struct
+%       timewin = time window to search for peak responses, [minwin maxwin]
+%       nchans = the number of best channels to give per hemisphere
+%       findtime = logical, whether to find the peak moment within timewin
+%           (findtime = 1) or to use max of each channel in the whole 
+%           window (findtime = 0). 1 is best if you are more unsure of your
+%           time window 
+%       plotflag = logical, whether to plot the topography and butterfly
+%           plot
+%       plotwin = timewindow for butterfly plot
+%
+%   Outputs:
+%       bestchannels = nchans x 2 array with first column giving best
+%           channels for left hemisphere and second column for right hemisphere
 
     cfg = [];
     cfg.covariance = 'no';

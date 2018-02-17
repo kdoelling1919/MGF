@@ -1,9 +1,15 @@
 function [ TFR ] = MGF_tfanalysis(data,freqoi,toi, m )
 % MGF_tfanalysis time frequency analysis for wavelet MEG data, depends on fieldtrip
-%   Detailed explanation goes here
-    if nargin < 4
+%   Inputs:
+%       data = fieldtrip data struct
+%       freqoi = frequencies of interest (numeric vector)
+%       toi = times of interest
+%       m = window length (in cycles) for wavelet analysis (default = 7)
+    % set default for m to 7
+    if nargin < 4 || isempty(m)
         m = 7;
     end
+    % run TF analysis
     cfg = [];
     cfg.channel = 'all';
     cfg.method = 'wavelet';

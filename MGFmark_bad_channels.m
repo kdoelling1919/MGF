@@ -1,9 +1,14 @@
 function [ bads ] = MGFmark_bad_channels( varargin )
-% mark_bad_channels Identifies bad channels for removal from sqd Denoise
+% MGFmark_bad_channels Identifies bad channels for removal from sqd Denoise
+%   Inputs: 
 %   sqdfile = filename of sqd
 %   knownbads = channels that should be removed automatically for whatever
-%   reason
+%       reason
+%   satthresh = the proportion of a segment that the channel can be
+%       saturated to be labeled bad
 %
+%   Outputs:
+%       bads = a vector of channel numbers for bad channels.
 %   Created by Keith Doelling, 2/12/2016
     if nargin == 3
         sqdfile = varargin{1};

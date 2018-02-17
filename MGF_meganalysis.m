@@ -1,4 +1,23 @@
 function [data, layout, neighbours, trlinfo] = MGF_meganalysis(sqdfile, channels, samplefs, lpf, hpf, trlinfo)
+%MGF_meganalysis reads in sqdfile data, filters and resamples
+%   Inputs:
+%       sqdfile = filepath to the sqd file to be read in
+%       channels = the channels to be selected (default is MEG channels
+%           (i.e. not triggers or noise channels)
+%       samplefs = new sampling rate to resample the data to.
+%       lpf = low pass filter cutoff
+%       hpf = high pass filter cutoff
+%       trlinfo = trial struct as output from MGF_TRIGGERREAD to be edited
+%           to accommodate resample
+%
+%   Outputs
+%       data = fieldtrip data struct as output from ft_preprocessing
+%       layout = fieldtrip layout struct for data channel positions
+%       neighbours = fieldtrip neighbours struct to identify nearby
+%           channels
+%       trlinfo = updated trlinfo given new resampling
+
+
         if nargin < 4
             lpf = [];
         end
@@ -40,14 +59,17 @@ function [data, layout, neighbours, trlinfo] = MGF_meganalysis(sqdfile, channels
             neighbours = ft_prepare_neighbours(cfg,data);
         end
         
-        if samplefs~=data.fsample
+        if ~isempty(samplefs) && samplefs~=data.fsample
+            resamp = 1;
             cfg=[];
             cfg.resamplefs = samplefs;
             cfg.detrend = 'no';
             data = ft_resampledata(cfg,data);
+        else
+            resamp = 0;
         end
         
-        if ~isempty(trlinfo) && nargout == 4 && trlinfo.fsample ~= samplefs
+        if ~isempty(trlinfo) && nargout == 4 && trlinfo.fsample ~= samplefs && resamp
             trlinfo.trl(:,1:3) = round(trlinfo.trl(:,1:3).*samplefs/trlinfo.fsample);
             samples = cellfun(@(x) round(x.*samplefs/trlinfo.fsample),...
                 {trlinfo.event.sample},'UniformOutput',false);
