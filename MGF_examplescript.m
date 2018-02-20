@@ -20,6 +20,7 @@ figdir = [root 'figs/'];
 submeg = [megdir subno '/'];
 sublog = [logdir subno '/'];
 subfig = [figdir subno '/'];
+
 sqdfiles = dir([submeg '*' protocol '*.sqd']);
 %%
 % remove sqdfiles that have already been denoised (in case you are running
@@ -103,9 +104,8 @@ trlinfo = MGF_triggerread(wholesesh, trigger, prestim, poststim);
 [ica,pca,weights,sphere] = MGF_megica(data, layout, 32, pcafig, 0);
 % remove ica components you don't like
 cleandata = MGF_cleanica(ica,pca,weights,sphere,layout);
-[~,lngth] = numSubPlot(round(cleandata.time{1}(end)));
 % remove any other clearly unruly channels
-cleandata = MGF_cleanbadchans(cleandata, layout, neighbours, lngth, 'visual'); % sometimes generates issues with data.grad not having the right size
+cleandata = MGF_cleanbadchans(cleandata, layout, neighbours, [], 'visual'); % sometimes generates issues with data.grad not having the right size
 overcleandata = MGF_overclean(cleandata, neighbours, 3e-12, 10, .05, 50);
 
 figure;
