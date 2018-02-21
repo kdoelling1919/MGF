@@ -1,4 +1,4 @@
-function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,seglength, chans )
+function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,chans )
 %MGF_cleanbadchans Repairs bad channels as specified or through visual
 %inspection
 %   Inputs
@@ -31,10 +31,10 @@ function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,seglength, ch
     end
     
     if strcmp(chans, 'visual')
-        % if visual, then set seglength default
-        if isempty(seglength)
-            seglength = 20;
-        end
+        % set to to automatically pick seglength
+        len = length(data.time{1});
+        seglen = autolen(len);
+        seglength = seglen./data.fsample;
         % chop raw signal into reasonably sized parts    
         cfg = [];
         cfg.length = seglength;
@@ -74,5 +74,15 @@ function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,seglength, ch
         cleandata.trial{1} = [cleandata.trial{1}; data.trial{1}(miss,:)];
     end
 
+end
+
+function seglen = autolen(len)
+    f = 1:floor(len./2);
+    m = len./f;
+    integ = m == floor(m);
+    f = f(integ);
+    m = m(integ);
+    [~,sel] = min(abs(f-m));
+    seglen = m(sel);
 end
 
