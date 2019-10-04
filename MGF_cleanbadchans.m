@@ -1,4 +1,4 @@
-function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,chans )
+function [ cleandata ] = MGF_cleanbadchans( data, layout, neighbours, chans)
 %MGF_cleanbadchans Repairs bad channels as specified or through visual
 %inspection
 %   Inputs
@@ -6,8 +6,9 @@ function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,chans )
 %           with default preprocessing
 %       layout = layout struct as outputted by ft_prepare_layout
 %       neighbours = neighbours struct as outputted by ft_prepare_neighbours
-%       seglength = the length of each segment (in seconds) to consider as a "trial" for
-%           reject visual (default = 20)
+%       seglength = the length of each segment (in seconds) to consider as a "trial".
+%           (default = 20). Ensure that this value is a divisor of the total session length.
+%           If not, it will cut out any remainder sections. 
 %       chans = a vector of numbers or 'visual'. If 'visual', function
 %       will call ft_rejectvisual with summary method to allow you to
 %       select channels to repair based on visual inspection. If a vector
@@ -15,7 +16,7 @@ function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,chans )
 %       numbers. (default is 'visual')
 %   Outputs
 %       cleandata = fieldtrip data struct with repaired channels
-    
+
 % If data is a filepath read in the data
     if ischar(data)
         cfg = [];
@@ -25,17 +26,17 @@ function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,chans )
     elseif ~isstruct(data)
         error('data variable is of wrong type');
     end
-% If no channels specified lets go visual    
+% If no channels specified lets go visual
     if isempty(chans)
         chans = 'visual';
     end
-    
+
     if strcmp(chans, 'visual')
         % set to to automatically pick seglength
         len = length(data.time{1});
         seglen = autolen(len);
         seglength = seglen./data.fsample;
-        % chop raw signal into reasonably sized parts    
+        % chop raw signal into reasonably sized parts
         cfg = [];
         cfg.length = seglength;
         split = ft_redefinetrial(cfg,data);
@@ -62,12 +63,12 @@ function [ cleandata ] = MGF_cleanbadchans( data,layout,neighbours,chans )
         % you did something wrong
         error('chans variable of wrong type')
     end
-    
+
     % Put the split back together again
     buf = data;
     buf.trial = {cell2mat(cleandata.trial)};
     cleandata = buf;
-    
+
     % put back trigger channels if they were there before
     if size(data.trial{1},1) > size(cleandata.trial{1},1)
         miss = size(cleandata.trial{1},1)+1:size(data.trial{1},1);
@@ -85,4 +86,3 @@ function seglen = autolen(len)
     [~,sel] = min(abs(f-m));
     seglen = m(sel);
 end
-
