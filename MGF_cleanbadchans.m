@@ -6,9 +6,6 @@ function [ cleandata ] = MGF_cleanbadchans( data, layout, neighbours, chans)
 %           with default preprocessing
 %       layout = layout struct as outputted by ft_prepare_layout
 %       neighbours = neighbours struct as outputted by ft_prepare_neighbours
-%       seglength = the length of each segment (in seconds) to consider as a "trial".
-%           (default = 20). Ensure that this value is a divisor of the total session length.
-%           If not, it will cut out any remainder sections. 
 %       chans = a vector of numbers or 'visual'. If 'visual', function
 %       will call ft_rejectvisual with summary method to allow you to
 %       select channels to repair based on visual inspection. If a vector

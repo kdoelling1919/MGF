@@ -14,7 +14,7 @@ You'll have to provide the data.
 To use it you will need to change the file information and parameters at the top of the script and ensure that all the functions called
 are in your MATLAB path.
 
-Ignore `MGF_runanalysis.m`. 
+Ignore `MGF_runanalysis.m`.
 
 ## Notes:
 ### `MGF_cleanbadchans`
@@ -22,10 +22,6 @@ This function allows for the cleaning of specified bad channels by replacing the
 You can either give it directly the channels you want clean or make choices based on visual inspection.
 If you choose, 'visual', the program calls ft_rejectvisual using the 'summary' option and it shows you a summary of the channels based on a feature of your selection.
 I generally use 1/var to identify dead channels, and var to identify super noisy channels.
-
-It's worth noting that reject visual splits the data into segments of a specific length that you can choose.
-Make sure that the total session length is a multiple of the segment length you choose.
-Otherwise the remainder will be cut off.
 
 ### `MGF_overclean`
 I tend to prefer keeping as much data as possible rather than removing trials with issues.
