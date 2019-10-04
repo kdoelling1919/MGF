@@ -21,7 +21,7 @@ Ignore `MGF_runanalysis.m`.
 This function allows for the cleaning of specified bad channels by replacing them with an interpolation of neighboring channels.
 You can either give it directly the channels you want clean or make choices based on visual inspection.
 If you choose, 'visual', the program calls ft_rejectvisual using the 'summary' option and it shows you a summary of the channels based on a feature of your selection.
-I generally use 1/var to identify dead channels, and var to identify supper noisy channels.
+I generally use 1/var to identify dead channels, and var to identify super noisy channels.
 
 It's worth noting that reject visual splits the data into segments of a specific length that you can choose.
 Make sure that the total session length is a multiple of the segment length you choose.
