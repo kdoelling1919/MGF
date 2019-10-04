@@ -6,7 +6,7 @@ It was designed and tested for the KIT Yokagawa System at NYU.
 - MATLAB
 - [Fieldtrip Toolbox](http://www.fieldtriptoolbox.org/)
 - [sqdDenoise Toolbox](https://isr.umd.edu/Labs/CSSL/simonlab/Denoising.html)
-Hopefully that's it.
+- Hopefully that's it.
 
 ## Example Script
 The script `MGF_examplescript.m` shows an example of how the functions can be used to clean some data.
